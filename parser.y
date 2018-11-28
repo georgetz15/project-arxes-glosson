@@ -30,8 +30,43 @@
 %token EQUAL
 %token QUOTE
 %%
-document: table space
-    | document space table space
+document: table
+    ;
+table: OPEN_TAG TABLE table_attr CLOSE_TAG
+        space
+        OPEN_TAG SLASH TABLE CLOSE_TAG          { printf("table 1\n"); }
+    | OPEN_TAG TABLE table_attr CLOSE_TAG
+     space col_elements                
+     OPEN_TAG SLASH TABLE CLOSE_TAG          { printf("table 2\n"); }
+    | OPEN_TAG TABLE table_attr CLOSE_TAG
+     space row_elements                
+     OPEN_TAG SLASH TABLE CLOSE_TAG          { printf("table 3\n"); }
+    | OPEN_TAG TABLE table_attr CLOSE_TAG
+     space col_elements row_elements   
+     OPEN_TAG SLASH TABLE CLOSE_TAG          { printf("table 4\n"); }
+
+    ;
+// table_contents: space                   { printf("table_contents 1\n"); }
+//     | space col_elements                { printf("table_contents 2\n"); }
+//     | space row_elements                { printf("table_contents 3\n"); }
+//     | space col_elements row_elements   { printf("table_contents 4\n"); }
+//     ;
+col_elements: column space                           { printf("col_elements1\n"); }
+    | col_elements column space              { printf("col_elements2\n"); }
+    ;
+row_elements: row space                             { printf("row_elements 1\n"); }
+    | row_elements row space                    { printf("row_elements 2\n"); }
+    ;
+column: OPEN_TAG COLUMN col_attr SLASH CLOSE_TAG  { printf("column\n"); }
+    ;
+row: OPEN_TAG ROW row_attr CLOSE_TAG
+     cell_elements
+     OPEN_TAG SLASH ROW CLOSE_TAG { printf("row\n"); }
+    ;
+cell_elements: space { printf("cell_elements\n"); }
+    | cell_elements cell space { printf("cell_elements\n"); }
+    ;
+cell: CELL { printf("cell\n"); }
     ;
 workbook: OPEN_TAG WORKBOOK CLOSE_TAG space worksheet_elements space
         OPEN_TAG SLASH WORKBOOK CLOSE_TAG       { printf("workbook\n"); }
@@ -42,16 +77,10 @@ worksheet: OPEN_TAG WORKSHEET WHITESPACE NAME value_string protected_elements
         CLOSE_TAG space table_elements space OPEN_TAG SLASH WORKSHEET CLOSE_TAG
         { printf("worksheet\n"); }
     ;
-table_elements:                           { printf("table_elements\n"); }
-    | table_elements space table          { printf("table_elements\n"); }
+table_elements: space                          { printf("table_elements 1\n"); }
+    | table_elements space table          { printf("table_elements 2\n"); }
     ;
-table: OPEN_TAG TABLE table_attr CLOSE_TAG
-        table_contents
-        OPEN_TAG SLASH TABLE CLOSE_TAG          { printf("table\n"); }
-    ;
-table_contents: space col_elements row_elements space { printf("table_contents 4\n"); }
-    ;
-table_attr:                                     { printf("table_attr\n"); }
+table_attr: space                               { printf("table_attr\n"); }
     | exp_col_cnt                               { printf("table_attr\n"); }
     | style_id                                  { printf("table_attr\n"); }
     | exp_row_cnt                               { printf("table_attr\n"); }
@@ -68,24 +97,11 @@ table_attr:                                     { printf("table_attr\n"); }
     | exp_col_cnt style_id exp_row_cnt          { printf("table_attr\n"); }
     | exp_col_cnt exp_row_cnt style_id          { printf("table_attr\n"); }
     ;
-exp_col_cnt:                                    { printf("exp_col_cnt\n"); }
-    | WHITESPACE EXP_COL_CNT value_integer      { printf("exp_col_cnt\n"); }
+exp_col_cnt: WHITESPACE EXP_COL_CNT value_integer      { printf("exp_col_cnt\n"); }
     ;
-exp_row_cnt:                                    { printf("exp_row_cnt\n"); }
-    | WHITESPACE EXP_ROW_CNT value_integer      { printf("exp_row_cnt\n"); }
+exp_row_cnt: WHITESPACE EXP_ROW_CNT value_integer      { printf("exp_row_cnt\n"); }
     ;
-style_id:                                       { printf("style_id\n"); }
-    | WHITESPACE STYLE_ID value_string          { printf("style_id\n"); }
-    ;
-col_elements:                                   { printf("col_elements\n"); }
-    | col_elements space column                 { printf("col_elements\n"); }
-    ;
-row_elements:                                   { printf("row_elements\n"); }
-    | row_elements space row                    { printf("row_elements\n"); }
-    ;
-column: OPEN_TAG COLUMN col_attr SLASH CLOSE_TAG  { printf("column\n"); }
-    ;
-col_attr:                            { printf("col_attr\n"); }
+col_attr: space                      { printf("col_attr\n"); }
     | hidden                         { printf("col_attr\n"); }
     | style_id                       { printf("col_attr\n"); }
     | width                          { printf("col_attr\n"); }
@@ -102,17 +118,11 @@ col_attr:                            { printf("col_attr\n"); }
     | hidden style_id width          { printf("col_attr\n"); }
     | hidden width style_id          { printf("col_attr\n"); }
     ;
-hidden:         { printf("hidden\n"); }
-    | WHITESPACE HIDDEN value_boolean { printf("hidden\n"); }
+hidden: WHITESPACE HIDDEN value_boolean { printf("hidden\n"); }
     ;
-width:          { printf("width\n"); }
-    | WHITESPACE WIDTH value_integer { printf("width\n"); }
+width: WHITESPACE WIDTH value_integer { printf("width\n"); }
     ;
-row: OPEN_TAG ROW row_attr CLOSE_TAG
-     space cell_elements space
-     OPEN_TAG SLASH ROW CLOSE_TAG { printf("row\n"); }                                         { printf("row\n"); }
-    ;
-row_attr:                            { printf("row_attr\n"); }
+row_attr: space                       { printf("row_attr\n"); }
     | hidden                          { printf("row_attr\n"); }
     | style_id                        { printf("row_attr\n"); }
     | height                          { printf("row_attr\n"); }
@@ -129,13 +139,9 @@ row_attr:                            { printf("row_attr\n"); }
     | hidden style_id height          { printf("row_attr\n"); }
     | hidden height style_id          { printf("row_attr\n"); }
     ;
-height:     { printf("height\n"); }
-    | WHITESPACE HEIGHT value_integer { printf("height\n"); }
+height: WHITESPACE HEIGHT value_integer { printf("height\n"); }
     ;
-cell_elements:  { printf("cell_elements\n"); }
-    | cell_elements space cell { printf("cell_elements\n"); }
-    ;
-cell: CELL { printf("cell\n"); }
+style_id: WHITESPACE STYLE_ID value_string          { printf("style_id\n"); }
     ;
 value_boolean: EQUAL QUOTE boolean QUOTE        { printf("value_boolean\n"); }
     ;
@@ -145,8 +151,7 @@ value_type: EQUAL QUOTE type QUOTE              { printf("value_type\n"); }
     ;
 value_integer: EQUAL QUOTE number QUOTE         { printf("value_integer\n"); }
     ;
-protected_elements:                 { printf("protected_elements\n"); }
-    | WHITESPACE PROTECTED value_boolean       { printf("protected_elements\n"); }
+protected_elements: WHITESPACE PROTECTED value_boolean       { printf("protected_elements\n"); }
     ;
 worksheet_elements: worksheet   { printf("worksheet elements\n"); }
     | worksheet_elements space worksheet { printf("worksheet elements\n"); }
@@ -189,8 +194,8 @@ punctuation: PUNCTUATION    { printf("punctuation\n"); }
     | COLON { printf("punctuation\n"); }
     | SLASH { printf("punctuation\n"); }
     ;
-space:              { printf("space\n"); }
-    | WHITESPACE    { printf("space\n"); }
+space:              { printf("space1\n"); }
+    | WHITESPACE    { printf("space2\n"); }
     ;
 comment: COMMENT { printf("comment\n"); }
     ;
