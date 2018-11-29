@@ -2,6 +2,7 @@
 %{
 #include <stdio.h>
 %}
+%locations
 /* declare tokens */
 %token DIGIT LETTER TRUE FALSE OPEN_TAG CLOSE_TAG SLASH ELEMENT
 %token WHITESPACE NUM_TYPE DATETIME_TYPE BOOLEAN_TYPE STRING_TYPE
@@ -245,7 +246,11 @@ int main(int argc, char **argv)
 {
   yyparse();
 }
-yyerror(char *s)
+yyerror(const char *s)
 {
-  fprintf(stderr, "error: %s\n", s);
+  fprintf(stderr, "Error: %s\n", s);
+  fprintf(stderr, "First line: %d\n", yylloc.first_line);
+  fprintf(stderr, "First column: %d\n", yylloc.first_column);
+  fprintf(stderr, "Last line: %d\n", yylloc.last_line);
+  fprintf(stderr, "Last column: %d\n", yylloc.last_column);
 }

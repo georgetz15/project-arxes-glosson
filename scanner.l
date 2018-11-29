@@ -2,6 +2,9 @@
 #include "parser.tab.h"
 %}
 
+%option yylineno
+%option bison-locations
+
 %%
 [0-9]                                               { return DIGIT; }
 [A-Za-z]                                            { return LETTER; }
