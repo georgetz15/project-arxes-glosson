@@ -50,8 +50,17 @@ style_elements: style space                { printf("style_elements 1\n"); }
 style: OPEN_TAG STYLE WHITESPACE ID value_string CLOSE_TAG space
         OPEN_TAG SLASH STYLE CLOSE_TAG                  { printf("style\n"); }
     ;
-worksheet: OPEN_TAG WORKSHEET WHITESPACE NAME value_string protected_elements
-        CLOSE_TAG space table_elements space OPEN_TAG SLASH WORKSHEET CLOSE_TAG { printf("worksheet\n"); }
+worksheet: OPEN_TAG WORKSHEET worksheet_attr
+        CLOSE_TAG space OPEN_TAG SLASH WORKSHEET CLOSE_TAG { printf("worksheet 1\n"); }
+    | OPEN_TAG WORKSHEET worksheet_attr
+        CLOSE_TAG space table_elements OPEN_TAG SLASH WORKSHEET CLOSE_TAG { printf("worksheet 2\n"); }
+    ;
+worksheet_attr: WHITESPACE NAME value_string space    { printf("worksheet_attr 1\n"); }
+    | WHITESPACE NAME value_string protected_elements space { printf("worksheet_attr 2\n"); }
+    | protected_elements WHITESPACE NAME value_string space { printf("worksheet_attr 2\n"); }
+    ;
+table_elements: table space                           { printf("table_elements 1\n"); }
+    | table_elements table space                      { printf("table_elements 2\n"); }
     ;
 table: OPEN_TAG TABLE table_attr CLOSE_TAG
         space
@@ -119,9 +128,6 @@ cell_attr: space                                { printf("cell_attr\n");}
 merge_across: WHITESPACE MERGEACROSS value_integer              { printf("merge_across\n");}
     ;
 merge_down: WHITESPACE MERGEDOWN value_integer                  { printf("merge_down\n");}
-    ;
-table_elements: space                           { printf("table_elements 1\n"); }
-    | table_elements space table                { printf("table_elements 2\n"); }
     ;
 table_attr: space                               { printf("table_attr\n"); }
     | exp_col_cnt                               { printf("table_attr\n"); }
