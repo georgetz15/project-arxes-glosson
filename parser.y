@@ -30,7 +30,24 @@
 %token EQUAL
 %token QUOTE
 %%
-document: table
+document: workbook
+    ;
+workbook: OPEN_TAG WORKBOOK CLOSE_TAG space worksheet_elements space
+        OPEN_TAG SLASH WORKBOOK CLOSE_TAG       { printf("workbook\n"); }
+    | OPEN_TAG WORKBOOK CLOSE_TAG space styles space worksheet_elements space
+        OPEN_TAG SLASH WORKBOOK CLOSE_TAG    { printf("workbook\n"); }
+    ;
+styles: OPEN_TAG STYLES CLOSE_TAG space style_elements space
+        OPEN_TAG SLASH STYLES CLOSE_TAG                  { printf("styles\n"); }
+    ;
+style_elements:                 { printf("style_elements\n"); }
+    | style_elements space style { printf("style_elements\n"); }
+    ;
+style: OPEN_TAG STYLE WHITESPACE ID value_string CLOSE_TAG space
+        OPEN_TAG SLASH STYLE CLOSE_TAG                  { printf("style\n"); }
+    ;
+worksheet: OPEN_TAG WORKSHEET WHITESPACE NAME value_string protected_elements
+        CLOSE_TAG space table_elements space OPEN_TAG SLASH WORKSHEET CLOSE_TAG { printf("worksheet\n"); }
     ;
 table: OPEN_TAG TABLE table_attr CLOSE_TAG
         space
@@ -44,7 +61,6 @@ table: OPEN_TAG TABLE table_attr CLOSE_TAG
     | OPEN_TAG TABLE table_attr CLOSE_TAG
      space col_elements row_elements   
      OPEN_TAG SLASH TABLE CLOSE_TAG          { printf("table 4\n"); }
-
     ;
 // table_contents: space                   { printf("table_contents 1\n"); }
 //     | space col_elements                { printf("table_contents 2\n"); }
@@ -63,22 +79,45 @@ row: OPEN_TAG ROW row_attr CLOSE_TAG
      cell_elements
      OPEN_TAG SLASH ROW CLOSE_TAG { printf("row\n"); }
     ;
-cell_elements: space { printf("cell_elements\n"); }
-    | cell_elements cell space { printf("cell_elements\n"); }
+cell_elements: space            { printf("cell_elements\n"); }
+    | cell_elements cell space  { printf("cell_elements\n"); }
     ;
-cell: CELL { printf("cell\n"); }
+cell: OPEN_TAG CELL cell_attr CLOSE_TAG
+     data_elements
+     OPEN_TAG SLASH CELL CLOSE_TAG              { printf("cell\n"); }
     ;
-workbook: OPEN_TAG WORKBOOK CLOSE_TAG space worksheet_elements space
-        OPEN_TAG SLASH WORKBOOK CLOSE_TAG       { printf("workbook\n"); }
-    | OPEN_TAG WORKBOOK CLOSE_TAG space styles space worksheet_elements space
-        OPEN_TAG SLASH WORKBOOK CLOSE_TAG    { printf("workbook\n"); }
+data_elements: space                            { printf("data_elements\n");}
+    |   data_elements data space                { printf("data_elements\n");}
     ;
-worksheet: OPEN_TAG WORKSHEET WHITESPACE NAME value_string protected_elements
-        CLOSE_TAG space table_elements space OPEN_TAG SLASH WORKSHEET CLOSE_TAG
-        { printf("worksheet\n"); }
+data: OPEN_TAG DATA data_attr CLOSE_TAG
+     string
+     OPEN_TAG SLASH DATA CLOSE_TAG              { printf("data\n"); }
     ;
-table_elements: space                          { printf("table_elements 1\n"); }
-    | table_elements space table          { printf("table_elements 2\n"); }
+data_attr: WHITESPACE TYPE value_type           { printf("data_attr\n");}
+    ;
+cell_attr: space                                { printf("cell_attr\n");}
+    | merge_across                              { printf("cell_attr\n"); }
+    | style_id                                  { printf("cell_attr\n"); }
+    | merge_down                                { printf("cell_attr\n"); }
+    | merge_across style_id                     { printf("cell_attr\n"); }
+    | merge_across merge_down                   { printf("cell_attr\n"); }
+    | style_id merge_across                     { printf("cell_attr\n"); }
+    | style_id merge_down                       { printf("cell_attr\n"); }
+    | merge_down merge_across                   { printf("cell_attr\n"); }
+    | merge_down style_id                       { printf("cell_attr\n"); }
+    | merge_down style_id merge_across          { printf("cell_attr\n"); }
+    | merge_down merge_across style_id          { printf("cell_attr\n"); }
+    | style_id merge_down merge_across          { printf("cell_attr\n"); }
+    | style_id merge_across merge_down          { printf("cell_attr\n"); }
+    | merge_across style_id merge_down          { printf("cell_attr\n"); }
+    | merge_across merge_down style_id          { printf("cell_attr\n"); }
+    ;
+merge_across: WHITESPACE MERGEACROSS value_integer              { printf("merge_across\n");}
+    ;
+merge_down: WHITESPACE MERGEDOWN value_integer                  { printf("merge_down\n");}
+    ;
+table_elements: space                           { printf("table_elements 1\n"); }
+    | table_elements space table                { printf("table_elements 2\n"); }
     ;
 table_attr: space                               { printf("table_attr\n"); }
     | exp_col_cnt                               { printf("table_attr\n"); }
@@ -156,15 +195,6 @@ protected_elements: WHITESPACE PROTECTED value_boolean       { printf("protected
 worksheet_elements: worksheet   { printf("worksheet elements\n"); }
     | worksheet_elements space worksheet { printf("worksheet elements\n"); }
     ;
-styles: OPEN_TAG STYLES CLOSE_TAG space style_elements space
-        OPEN_TAG SLASH STYLES CLOSE_TAG                  { printf("styles\n"); }
-    ;
-style_elements:                 { printf("style_elements\n"); }
-    | style_elements space style { printf("style_elements\n"); }
-    ;
-style: OPEN_TAG STYLE WHITESPACE ID value_string CLOSE_TAG space
-        OPEN_TAG SLASH STYLE CLOSE_TAG                  { printf("style\n"); }
-    ;
 boolean: TRUE                   { printf("boolean\n"); }
     | FALSE                     { printf("boolean\n"); }
     ;
@@ -178,6 +208,7 @@ string:                         { printf("string\n"); }
     | string word               { printf("string\n"); }
     | string number             { printf("string\n"); }
     | string WHITESPACE         { printf("string\n"); }
+    | string punctuation        { printf("string\n"); }
     ;
 element: OPEN_TAG ELEMENT CLOSE_TAG string OPEN_TAG SLASH ELEMENT CLOSE_TAG  { printf("element\n"); }
     ;
