@@ -30,18 +30,22 @@
 %token EQUAL
 %token QUOTE
 %%
-document: workbook
+document: worksheet
     ;
 workbook: OPEN_TAG WORKBOOK CLOSE_TAG space worksheet_elements space
         OPEN_TAG SLASH WORKBOOK CLOSE_TAG       { printf("workbook 1\n"); }
     | OPEN_TAG WORKBOOK CLOSE_TAG space styles space worksheet_elements space
         OPEN_TAG SLASH WORKBOOK CLOSE_TAG    { printf("workbook 2\n"); }
     ;
-styles: OPEN_TAG STYLES CLOSE_TAG space style_elements space
-        OPEN_TAG SLASH STYLES CLOSE_TAG                  { printf("styles\n"); }
+styles: OPEN_TAG STYLES CLOSE_TAG
+        space
+        OPEN_TAG SLASH STYLES CLOSE_TAG                  { printf("styles 1\n"); }
+    | OPEN_TAG STYLES CLOSE_TAG
+        space style_elements
+        OPEN_TAG SLASH STYLES CLOSE_TAG                  { printf("styles 2\n"); }
     ;
-style_elements:                 { printf("style_elements 1\n"); }
-    | style_elements space style { printf("style_elements 2\n"); }
+style_elements: style space                { printf("style_elements 1\n"); }
+    | style_elements style space           { printf("style_elements 2\n"); }
     ;
 style: OPEN_TAG STYLE WHITESPACE ID value_string CLOSE_TAG space
         OPEN_TAG SLASH STYLE CLOSE_TAG                  { printf("style\n"); }
