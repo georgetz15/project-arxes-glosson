@@ -33,15 +33,15 @@
 document: workbook
     ;
 workbook: OPEN_TAG WORKBOOK CLOSE_TAG space worksheet_elements space
-        OPEN_TAG SLASH WORKBOOK CLOSE_TAG       { printf("workbook\n"); }
+        OPEN_TAG SLASH WORKBOOK CLOSE_TAG       { printf("workbook 1\n"); }
     | OPEN_TAG WORKBOOK CLOSE_TAG space styles space worksheet_elements space
-        OPEN_TAG SLASH WORKBOOK CLOSE_TAG    { printf("workbook\n"); }
+        OPEN_TAG SLASH WORKBOOK CLOSE_TAG    { printf("workbook 2\n"); }
     ;
 styles: OPEN_TAG STYLES CLOSE_TAG space style_elements space
         OPEN_TAG SLASH STYLES CLOSE_TAG                  { printf("styles\n"); }
     ;
-style_elements:                 { printf("style_elements\n"); }
-    | style_elements space style { printf("style_elements\n"); }
+style_elements:                 { printf("style_elements 1\n"); }
+    | style_elements space style { printf("style_elements 2\n"); }
     ;
 style: OPEN_TAG STYLE WHITESPACE ID value_string CLOSE_TAG space
         OPEN_TAG SLASH STYLE CLOSE_TAG                  { printf("style\n"); }
@@ -79,15 +79,15 @@ row: OPEN_TAG ROW row_attr CLOSE_TAG
      cell_elements
      OPEN_TAG SLASH ROW CLOSE_TAG { printf("row\n"); }
     ;
-cell_elements: space            { printf("cell_elements\n"); }
-    | cell_elements cell space  { printf("cell_elements\n"); }
+cell_elements: space            { printf("cell_elements 1\n"); }
+    | cell_elements cell space  { printf("cell_elements 2\n"); }
     ;
 cell: OPEN_TAG CELL cell_attr CLOSE_TAG
      data_elements
      OPEN_TAG SLASH CELL CLOSE_TAG              { printf("cell\n"); }
     ;
-data_elements: space                            { printf("data_elements\n");}
-    |   data_elements data space                { printf("data_elements\n");}
+data_elements: space                            { printf("data_elements 1\n");}
+    |   data_elements data space                { printf("data_elements 2\n");}
     ;
 data: OPEN_TAG DATA data_attr CLOSE_TAG
      string
