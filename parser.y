@@ -30,11 +30,11 @@
 %token EQUAL
 %token QUOTE
 %%
-document: worksheet
+document: workbook
     ;
-workbook: OPEN_TAG WORKBOOK CLOSE_TAG space worksheet_elements space
+workbook: OPEN_TAG WORKBOOK CLOSE_TAG space worksheet_elements
         OPEN_TAG SLASH WORKBOOK CLOSE_TAG       { printf("workbook 1\n"); }
-    | OPEN_TAG WORKBOOK CLOSE_TAG space styles space worksheet_elements space
+    | OPEN_TAG WORKBOOK CLOSE_TAG space styles space worksheet_elements
         OPEN_TAG SLASH WORKBOOK CLOSE_TAG    { printf("workbook 2\n"); }
     ;
 styles: OPEN_TAG STYLES CLOSE_TAG
@@ -202,8 +202,8 @@ value_integer: EQUAL QUOTE number QUOTE         { printf("value_integer\n"); }
     ;
 protected_elements: WHITESPACE PROTECTED value_boolean       { printf("protected_elements\n"); }
     ;
-worksheet_elements: worksheet   { printf("worksheet elements\n"); }
-    | worksheet_elements space worksheet { printf("worksheet elements\n"); }
+worksheet_elements: worksheet space  { printf("worksheet elements\n"); }
+    | worksheet_elements worksheet space { printf("worksheet elements\n"); }
     ;
 boolean: TRUE                   { printf("boolean\n"); }
     | FALSE                     { printf("boolean\n"); }
