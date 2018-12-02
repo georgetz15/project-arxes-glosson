@@ -1,5 +1,7 @@
 %{
 #include <stdio.h>
+    extern int yylineno;
+    extern FILE* yyin;
 %}
 %define parse.error verbose
 %locations
@@ -239,11 +241,11 @@ comment: COMMENT { printf("comment\n"); }
 %%
 int main(int argc, char **argv)
 {
+    yyin = fopen(argv[1], "r");
     yyparse();
 }
 int yyerror(char *s)
 {
-    extern int yylineno;
     fprintf(stderr, "Error: %s\n", s);
     fprintf(stderr, "Error in line: %d\n", yylineno);
 }
