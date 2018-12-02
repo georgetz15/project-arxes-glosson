@@ -1,7 +1,7 @@
-/* simplest version of calculator */
 %{
 #include <stdio.h>
 %}
+%define parse.error verbose
 %locations
 /* declare tokens */
 %token DIGIT LETTER TRUE FALSE OPEN_TAG CLOSE_TAG SLASH ELEMENT
@@ -31,7 +31,7 @@
 %token EQUAL
 %token QUOTE
 %%
-document: workbook
+document: workbook  { printf("Document is fine!\n"); }
     ;
 workbook: OPEN_TAG WORKBOOK CLOSE_TAG space worksheet_elements
         OPEN_TAG SLASH WORKBOOK CLOSE_TAG       { printf("workbook 1\n"); }
@@ -76,11 +76,6 @@ table: OPEN_TAG TABLE table_attr CLOSE_TAG
      space col_elements row_elements   
      OPEN_TAG SLASH TABLE CLOSE_TAG          { printf("table 4\n"); }
     ;
-// table_contents: space                   { printf("table_contents 1\n"); }
-//     | space col_elements                { printf("table_contents 2\n"); }
-//     | space row_elements                { printf("table_contents 3\n"); }
-//     | space col_elements row_elements   { printf("table_contents 4\n"); }
-//     ;
 col_elements: column space                           { printf("col_elements1\n"); }
     | col_elements column space              { printf("col_elements2\n"); }
     ;
@@ -244,13 +239,11 @@ comment: COMMENT { printf("comment\n"); }
 %%
 int main(int argc, char **argv)
 {
-  yyparse();
+    yyparse();
 }
-yyerror(const char *s)
+int yyerror(char *s)
 {
-  fprintf(stderr, "Error: %s\n", s);
-  fprintf(stderr, "First line: %d\n", yylloc.first_line);
-  fprintf(stderr, "First column: %d\n", yylloc.first_column);
-  fprintf(stderr, "Last line: %d\n", yylloc.last_line);
-  fprintf(stderr, "Last column: %d\n", yylloc.last_column);
+    extern int yylineno;
+    fprintf(stderr, "Error: %s\n", s);
+    fprintf(stderr, "Error in line: %d\n", yylineno);
 }
