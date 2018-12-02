@@ -5,7 +5,7 @@
 %}
 %define parse.error verbose
 %locations
-/* declare tokens */
+/* declared tokens */
 %token DIGIT LETTER TRUE FALSE OPEN_TAG CLOSE_TAG SLASH ELEMENT
 %token WHITESPACE NUM_TYPE DATETIME_TYPE BOOLEAN_TYPE STRING_TYPE
 %token MINUS PLUS COLON PUNCTUATION COMMENT
@@ -218,8 +218,6 @@ string:                         { printf("string\n"); }
     | string WHITESPACE         { printf("string\n"); }
     | string punctuation        { printf("string\n"); }
     ;
-element: OPEN_TAG ELEMENT CLOSE_TAG string OPEN_TAG SLASH ELEMENT CLOSE_TAG  { printf("element\n"); }
-    ;
 datetime: DIGIT DIGIT SLASH DIGIT DIGIT SLASH DIGIT DIGIT MINUS DIGIT DIGIT COLON DIGIT DIGIT COLON DIGIT DIGIT  { printf("datetime\n"); }
     ;
 type: NUM_TYPE          { printf("type\n"); }
@@ -239,8 +237,6 @@ space:                  { printf("space1\n"); }
     ;
 whitespace-attr: WHITESPACE 
     | whitespace-attr WHITESPACE
-    ;
-comment: COMMENT { printf("comment\n"); }
     ;
 %%
 int main(int argc, char **argv)
