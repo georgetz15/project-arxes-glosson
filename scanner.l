@@ -14,7 +14,7 @@ False                                               { return FALSE; }
 "DateTime"                                          { return DATETIME_TYPE; }
 "Boolean"                                           { return BOOLEAN_TYPE; }
 "String"                                            { return STRING_TYPE; }
-"<!--"(([^-])|(-[^-]))*"-->"                        { return COMMENT; }
+"<!--"(([^-])|(-[^-]))*"-->"                        { /*do nothig*/}
 "<"                                                 { return OPEN_TAG; }
 ">"                                                 { return CLOSE_TAG; }
 "/"                                                 { return SLASH; }

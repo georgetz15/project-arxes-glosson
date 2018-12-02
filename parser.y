@@ -50,7 +50,7 @@ styles: OPEN_TAG STYLES CLOSE_TAG
 style_elements: style space                { printf("style_elements 1\n"); }
     | style_elements style space           { printf("style_elements 2\n"); }
     ;
-style: OPEN_TAG STYLE WHITESPACE ID value_string CLOSE_TAG space
+style: OPEN_TAG STYLE whitespace-attr ID value_string CLOSE_TAG space
         OPEN_TAG SLASH STYLE CLOSE_TAG                  { printf("style\n"); }
     ;
 worksheet: OPEN_TAG WORKSHEET worksheet_attr
@@ -58,9 +58,9 @@ worksheet: OPEN_TAG WORKSHEET worksheet_attr
     | OPEN_TAG WORKSHEET worksheet_attr
         CLOSE_TAG space table_elements OPEN_TAG SLASH WORKSHEET CLOSE_TAG { printf("worksheet 2\n"); }
     ;
-worksheet_attr: WHITESPACE NAME value_string space    { printf("worksheet_attr 1\n"); }
-    | WHITESPACE NAME value_string protected_elements space { printf("worksheet_attr 2\n"); }
-    | protected_elements WHITESPACE NAME value_string space { printf("worksheet_attr 2\n"); }
+worksheet_attr: whitespace-attr NAME value_string space    { printf("worksheet_attr 1\n"); }
+    | whitespace-attr NAME value_string protected_elements space { printf("worksheet_attr 2\n"); }
+    | protected_elements whitespace-attr NAME value_string space { printf("worksheet_attr 2\n"); }
     ;
 table_elements: table space                           { printf("table_elements 1\n"); }
     | table_elements table space                      { printf("table_elements 2\n"); }
@@ -104,7 +104,7 @@ data: OPEN_TAG DATA data_attr CLOSE_TAG
      string
      OPEN_TAG SLASH DATA CLOSE_TAG              { printf("data\n"); }
     ;
-data_attr: WHITESPACE TYPE value_type           { printf("data_attr\n");}
+data_attr: whitespace-attr TYPE value_type           { printf("data_attr\n");}
     ;
 cell_attr: space                                { printf("cell_attr\n");}
     | merge_across                              { printf("cell_attr\n"); }
@@ -123,9 +123,9 @@ cell_attr: space                                { printf("cell_attr\n");}
     | merge_across style_id merge_down          { printf("cell_attr\n"); }
     | merge_across merge_down style_id          { printf("cell_attr\n"); }
     ;
-merge_across: WHITESPACE MERGEACROSS value_integer              { printf("merge_across\n");}
+merge_across: whitespace-attr MERGEACROSS value_integer              { printf("merge_across\n");}
     ;
-merge_down: WHITESPACE MERGEDOWN value_integer                  { printf("merge_down\n");}
+merge_down: whitespace-attr MERGEDOWN value_integer                  { printf("merge_down\n");}
     ;
 table_attr: space                               { printf("table_attr\n"); }
     | exp_col_cnt                               { printf("table_attr\n"); }
@@ -144,9 +144,9 @@ table_attr: space                               { printf("table_attr\n"); }
     | exp_col_cnt style_id exp_row_cnt          { printf("table_attr\n"); }
     | exp_col_cnt exp_row_cnt style_id          { printf("table_attr\n"); }
     ;
-exp_col_cnt: WHITESPACE EXP_COL_CNT value_integer      { printf("exp_col_cnt\n"); }
+exp_col_cnt: whitespace-attr EXP_COL_CNT value_integer      { printf("exp_col_cnt\n"); }
     ;
-exp_row_cnt: WHITESPACE EXP_ROW_CNT value_integer      { printf("exp_row_cnt\n"); }
+exp_row_cnt: whitespace-attr EXP_ROW_CNT value_integer      { printf("exp_row_cnt\n"); }
     ;
 col_attr: space                      { printf("col_attr\n"); }
     | hidden                         { printf("col_attr\n"); }
@@ -165,9 +165,9 @@ col_attr: space                      { printf("col_attr\n"); }
     | hidden style_id width          { printf("col_attr\n"); }
     | hidden width style_id          { printf("col_attr\n"); }
     ;
-hidden: WHITESPACE HIDDEN value_boolean { printf("hidden\n"); }
+hidden: whitespace-attr HIDDEN value_boolean { printf("hidden\n"); }
     ;
-width: WHITESPACE WIDTH value_integer { printf("width\n"); }
+width: whitespace-attr WIDTH value_integer { printf("width\n"); }
     ;
 row_attr: space                       { printf("row_attr\n"); }
     | hidden                          { printf("row_attr\n"); }
@@ -186,9 +186,9 @@ row_attr: space                       { printf("row_attr\n"); }
     | hidden style_id height          { printf("row_attr\n"); }
     | hidden height style_id          { printf("row_attr\n"); }
     ;
-height: WHITESPACE HEIGHT value_integer { printf("height\n"); }
+height: whitespace-attr HEIGHT value_integer { printf("height\n"); }
     ;
-style_id: WHITESPACE STYLE_ID value_string          { printf("style_id\n"); }
+style_id: whitespace-attr STYLE_ID value_string          { printf("style_id\n"); }
     ;
 value_boolean: EQUAL QUOTE boolean QUOTE        { printf("value_boolean\n"); }
     ;
@@ -198,7 +198,7 @@ value_type: EQUAL QUOTE type QUOTE              { printf("value_type\n"); }
     ;
 value_integer: EQUAL QUOTE number QUOTE         { printf("value_integer\n"); }
     ;
-protected_elements: WHITESPACE PROTECTED value_boolean       { printf("protected_elements\n"); }
+protected_elements: whitespace-attr PROTECTED value_boolean       { printf("protected_elements\n"); }
     ;
 worksheet_elements: worksheet space  { printf("worksheet elements\n"); }
     | worksheet_elements worksheet space { printf("worksheet elements\n"); }
@@ -233,8 +233,12 @@ punctuation: PUNCTUATION    { printf("punctuation\n"); }
     | COLON { printf("punctuation\n"); }
     | SLASH { printf("punctuation\n"); }
     ;
-space:              { printf("space1\n"); }
-    | WHITESPACE    { printf("space2\n"); }
+space:                  { printf("space1\n"); }
+    | WHITESPACE        { printf("space2\n"); }
+    | space WHITESPACE  { printf("space2\n"); }
+    ;
+whitespace-attr: WHITESPACE 
+    | whitespace-attr WHITESPACE
     ;
 comment: COMMENT { printf("comment\n"); }
     ;
