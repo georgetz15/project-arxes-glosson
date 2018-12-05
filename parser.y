@@ -40,6 +40,7 @@
 %token <str> QUOTE
 
 %type <num> number
+%type <str> word
 %%
 document: workbook  { printf("Document is fine!\n"); }
     ;
