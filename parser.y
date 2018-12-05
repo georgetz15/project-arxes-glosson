@@ -215,8 +215,8 @@ worksheet_elements: worksheet space  { printf("worksheet elements\n"); }
 boolean: TRUE                   { printf("boolean\n"); }
     | FALSE                     { printf("boolean\n"); }
     ;
-word: LETTER                    { printf("word %s\n", $1); }
-    | word LETTER               { printf("word %s\n", $2); }
+word: LETTER                    { printf("word %s\n", $1); free($1); }
+    | word LETTER               { printf("word %s\n", $2); free($2); }
     ;
 number: DIGIT                   { printf("number\n"); }
     | number DIGIT              { printf("number\n"); }
