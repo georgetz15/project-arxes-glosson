@@ -5,33 +5,41 @@
 %}
 %define parse.error verbose
 %locations
-/* declared tokens */
-%token DIGIT LETTER TRUE FALSE OPEN_TAG CLOSE_TAG SLASH ELEMENT
-%token WHITESPACE NUM_TYPE DATETIME_TYPE BOOLEAN_TYPE STRING_TYPE
-%token MINUS PLUS COLON PUNCTUATION COMMENT
-%token WORKBOOK
-%token WORKSHEET
-%token STYLES
-%token STYLE
-%token ID
-%token TABLE
-%token NAME
-%token PROTECTED
-%token COLUMN
-%token ROW
-%token EXP_COL_CNT
-%token EXP_ROW_CNT
-%token STYLE_ID
-%token HIDDEN
-%token WIDTH
-%token CELL
-%token HEIGHT
-%token DATA
-%token MERGEACROSS
-%token MERGEDOWN
-%token TYPE
-%token EQUAL
-%token QUOTE
+
+%union {
+    char * str;
+    int num;
+}
+
+/* declared token <str>s */
+%token <str> DIGIT LETTER TRUE FALSE OPEN_TAG CLOSE_TAG SLASH ELEMENT
+%token <str> WHITESPACE NUM_TYPE DATETIME_TYPE BOOLEAN_TYPE STRING_TYPE
+%token <str> MINUS PLUS COLON PUNCTUATION COMMENT
+%token <str> WORKBOOK
+%token <str> WORKSHEET
+%token <str> STYLES
+%token <str> STYLE
+%token <str> ID
+%token <str> TABLE
+%token <str> NAME
+%token <str> PROTECTED
+%token <str> COLUMN
+%token <str> ROW
+%token <str> EXP_COL_CNT
+%token <str> EXP_ROW_CNT
+%token <str> STYLE_ID
+%token <str> HIDDEN
+%token <str> WIDTH
+%token <str> CELL
+%token <str> HEIGHT
+%token <str> DATA
+%token <str> MERGEACROSS
+%token <str> MERGEDOWN
+%token <str> TYPE
+%token <str> EQUAL
+%token <str> QUOTE
+
+%type <num> number
 %%
 document: workbook  { printf("Document is fine!\n"); }
     ;
@@ -206,8 +214,8 @@ worksheet_elements: worksheet space  { printf("worksheet elements\n"); }
 boolean: TRUE                   { printf("boolean\n"); }
     | FALSE                     { printf("boolean\n"); }
     ;
-word: LETTER                    { printf("word\n"); }
-    | word LETTER               { printf("word\n"); }
+word: LETTER                    { printf("word %s\n", $1); }
+    | word LETTER               { printf("word %s\n", $2); }
     ;
 number: DIGIT                   { printf("number\n"); }
     | number DIGIT              { printf("number\n"); }
