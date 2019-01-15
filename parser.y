@@ -5,33 +5,42 @@
 %}
 %define parse.error verbose
 %locations
-/* declared tokens */
-%token DIGIT LETTER TRUE FALSE OPEN_TAG CLOSE_TAG SLASH ELEMENT
-%token WHITESPACE NUM_TYPE DATETIME_TYPE BOOLEAN_TYPE STRING_TYPE
-%token MINUS PLUS COLON PUNCTUATION COMMENT
-%token WORKBOOK
-%token WORKSHEET
-%token STYLES
-%token STYLE
-%token ID
-%token TABLE
-%token NAME
-%token PROTECTED
-%token COLUMN
-%token ROW
-%token EXP_COL_CNT
-%token EXP_ROW_CNT
-%token STYLE_ID
-%token HIDDEN
-%token WIDTH
-%token CELL
-%token HEIGHT
-%token DATA
-%token MERGEACROSS
-%token MERGEDOWN
-%token TYPE
-%token EQUAL
-%token QUOTE
+
+%union {
+    char * str;
+    int num;
+}
+
+/* declared token <str>s */
+%token <str> DIGIT LETTER TRUE FALSE OPEN_TAG CLOSE_TAG SLASH ELEMENT
+%token <str> WHITESPACE NUM_TYPE DATETIME_TYPE BOOLEAN_TYPE STRING_TYPE
+%token <str> MINUS PLUS COLON PUNCTUATION COMMENT
+%token <str> WORKBOOK
+%token <str> WORKSHEET
+%token <str> STYLES
+%token <str> STYLE
+%token <str> ID
+%token <str> TABLE
+%token <str> NAME
+%token <str> PROTECTED
+%token <str> COLUMN
+%token <str> ROW
+%token <str> EXP_COL_CNT
+%token <str> EXP_ROW_CNT
+%token <str> STYLE_ID
+%token <str> HIDDEN
+%token <str> WIDTH
+%token <str> CELL
+%token <str> HEIGHT
+%token <str> DATA
+%token <str> MERGEACROSS
+%token <str> MERGEDOWN
+%token <str> TYPE
+%token <str> EQUAL
+%token <str> QUOTE
+
+%type <num> number
+%type <str> word
 %%
 document: workbook  
     ;
@@ -102,6 +111,7 @@ data_elements: space
     ;
 data: OPEN_TAG DATA data_attr CLOSE_TAG
      string
+<<<<<<< HEAD
      OPEN_TAG SLASH DATA CLOSE_TAG              
     ;
 data_attr: whitespace-attr TYPE value_type           
@@ -217,6 +227,123 @@ string:
     | string number             
     | string WHITESPACE         
     | string punctuation        
+=======
+     OPEN_TAG SLASH DATA CLOSE_TAG              { printf("data\n"); }
+    ;
+data_attr: whitespace-attr TYPE value_type           { printf("data_attr\n");}
+    ;
+cell_attr: space                                { printf("cell_attr\n");}
+    | merge_across                              { printf("cell_attr\n"); }
+    | style_id                                  { printf("cell_attr\n"); }
+    | merge_down                                { printf("cell_attr\n"); }
+    | merge_across style_id                     { printf("cell_attr\n"); }
+    | merge_across merge_down                   { printf("cell_attr\n"); }
+    | style_id merge_across                     { printf("cell_attr\n"); }
+    | style_id merge_down                       { printf("cell_attr\n"); }
+    | merge_down merge_across                   { printf("cell_attr\n"); }
+    | merge_down style_id                       { printf("cell_attr\n"); }
+    | merge_down style_id merge_across          { printf("cell_attr\n"); }
+    | merge_down merge_across style_id          { printf("cell_attr\n"); }
+    | style_id merge_down merge_across          { printf("cell_attr\n"); }
+    | style_id merge_across merge_down          { printf("cell_attr\n"); }
+    | merge_across style_id merge_down          { printf("cell_attr\n"); }
+    | merge_across merge_down style_id          { printf("cell_attr\n"); }
+    ;
+merge_across: whitespace-attr MERGEACROSS value_integer              { printf("merge_across\n");}
+    ;
+merge_down: whitespace-attr MERGEDOWN value_integer                  { printf("merge_down\n");}
+    ;
+table_attr: space                               { printf("table_attr\n"); }
+    | exp_col_cnt                               { printf("table_attr\n"); }
+    | style_id                                  { printf("table_attr\n"); }
+    | exp_row_cnt                               { printf("table_attr\n"); }
+    | exp_col_cnt style_id                      { printf("table_attr\n"); }
+    | exp_col_cnt exp_row_cnt                   { printf("table_attr\n"); }
+    | style_id exp_col_cnt                      { printf("table_attr\n"); }
+    | style_id exp_row_cnt                      { printf("table_attr\n"); }
+    | exp_row_cnt exp_col_cnt                   { printf("table_attr\n"); }
+    | exp_row_cnt style_id                      { printf("table_attr\n"); }
+    | exp_row_cnt style_id exp_col_cnt          { printf("table_attr\n"); }
+    | exp_row_cnt exp_col_cnt style_id          { printf("table_attr\n"); }
+    | style_id exp_row_cnt exp_col_cnt          { printf("table_attr\n"); }
+    | style_id exp_col_cnt exp_row_cnt          { printf("table_attr\n"); }
+    | exp_col_cnt style_id exp_row_cnt          { printf("table_attr\n"); }
+    | exp_col_cnt exp_row_cnt style_id          { printf("table_attr\n"); }
+    ;
+exp_col_cnt: whitespace-attr EXP_COL_CNT value_integer      { printf("exp_col_cnt\n"); }
+    ;
+exp_row_cnt: whitespace-attr EXP_ROW_CNT value_integer      { printf("exp_row_cnt\n"); }
+    ;
+col_attr: space                      { printf("col_attr\n"); }
+    | hidden                         { printf("col_attr\n"); }
+    | style_id                       { printf("col_attr\n"); }
+    | width                          { printf("col_attr\n"); }
+    | hidden style_id                { printf("col_attr\n"); }
+    | hidden width                   { printf("col_attr\n"); }
+    | style_id hidden                { printf("col_attr\n"); }
+    | style_id width                 { printf("col_attr\n"); }
+    | width hidden                   { printf("col_attr\n"); }
+    | width style_id                 { printf("col_attr\n"); }
+    | width style_id hidden          { printf("col_attr\n"); }
+    | width hidden style_id          { printf("col_attr\n"); }
+    | style_id width hidden          { printf("col_attr\n"); }
+    | style_id hidden width          { printf("col_attr\n"); }
+    | hidden style_id width          { printf("col_attr\n"); }
+    | hidden width style_id          { printf("col_attr\n"); }
+    ;
+hidden: whitespace-attr HIDDEN value_boolean { printf("hidden\n"); }
+    ;
+width: whitespace-attr WIDTH value_integer { printf("width\n"); }
+    ;
+row_attr: space                       { printf("row_attr\n"); }
+    | hidden                          { printf("row_attr\n"); }
+    | style_id                        { printf("row_attr\n"); }
+    | height                          { printf("row_attr\n"); }
+    | hidden style_id                 { printf("row_attr\n"); }
+    | hidden height                   { printf("row_attr\n"); }
+    | style_id hidden                 { printf("row_attr\n"); }
+    | style_id height                 { printf("row_attr\n"); }
+    | height hidden                   { printf("row_attr\n"); }
+    | height style_id                 { printf("row_attr\n"); }
+    | height style_id hidden          { printf("row_attr\n"); }
+    | height hidden style_id          { printf("row_attr\n"); }
+    | style_id height hidden          { printf("row_attr\n"); }
+    | style_id hidden height          { printf("row_attr\n"); }
+    | hidden style_id height          { printf("row_attr\n"); }
+    | hidden height style_id          { printf("row_attr\n"); }
+    ;
+height: whitespace-attr HEIGHT value_integer { printf("height\n"); }
+    ;
+style_id: whitespace-attr STYLE_ID value_string          { printf("style_id\n"); }
+    ;
+value_boolean: EQUAL QUOTE boolean QUOTE        { printf("value_boolean\n"); }
+    ;
+value_string: EQUAL QUOTE string QUOTE          { printf("value_string\n"); }
+    ;
+value_type: EQUAL QUOTE type QUOTE              { printf("value_type\n"); }
+    ;
+value_integer: EQUAL QUOTE number QUOTE         { printf("value_integer\n"); }
+    ;
+protected_elements: whitespace-attr PROTECTED value_boolean       { printf("protected_elements\n"); }
+    ;
+worksheet_elements: worksheet space  { printf("worksheet elements\n"); }
+    | worksheet_elements worksheet space { printf("worksheet elements\n"); }
+    ;
+boolean: TRUE                   { printf("boolean\n"); }
+    | FALSE                     { printf("boolean\n"); }
+    ;
+word: LETTER                    { printf("word %s\n", $1); free($1); }
+    | word LETTER               { printf("word %s\n", $2); free($2); }
+    ;
+number: DIGIT                   { printf("number\n"); }
+    | number DIGIT              { printf("number\n"); }
+    ;
+string:                         { printf("string\n"); }
+    | string word               { printf("string\n"); }
+    | string number             { printf("string\n"); }
+    | string WHITESPACE         { printf("string\n"); }
+    | string punctuation        { printf("string\n"); }
+>>>>>>> ba136a33cc81c36e94fc2e616ebef5d0a6c4c83a
     ;
 datetime: DIGIT DIGIT SLASH DIGIT DIGIT SLASH DIGIT DIGIT MINUS DIGIT DIGIT COLON DIGIT DIGIT COLON DIGIT DIGIT  { printf("datetime\n"); }
     ;
