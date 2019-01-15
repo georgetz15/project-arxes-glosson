@@ -1,0 +1,205 @@
+document → workbook  
+    
+workbook → "<" WORKBOOK ">" space worksheet_elements
+           "<" "/" WORKBOOK ">"
+    | "<" WORKBOOK ">" space styles space worksheet_elements
+        "<" "/" WORKBOOK ">"
+    
+styles → "<" STYLES ">"
+        space
+        "<" "/" STYLES ">"                  
+    | "<" STYLES ">"
+        space style_elements
+        "<" "/" STYLES ">"                  
+    
+style_elements → style space                
+    | style_elements style space           
+    
+style → "<" STYLE whitespace-attr ID value_string ">" space
+        "<" "/" STYLE ">"                  
+    
+worksheet → "<" WORKSHEET worksheet_attr
+        ">" space "<" "/" WORKSHEET ">" 
+    | "<" WORKSHEET worksheet_attr
+        ">" space table_elements "<" "/" WORKSHEET ">" 
+    
+worksheet_attr → whitespace-attr NAME value_string space    
+    | whitespace-attr NAME value_string protected_elements space 
+    | protected_elements whitespace-attr NAME value_string space 
+    
+table_elements → table space                           
+    | table_elements table space                      
+    
+table → "<" TABLE table_attr ">"
+        space
+        "<" "/" TABLE ">"          
+    | "<" TABLE table_attr ">"
+     space col_elements                
+     "<" "/" TABLE ">"          
+    | "<" TABLE table_attr ">"
+     space row_elements                
+     "<" "/" TABLE ">"          
+    | "<" TABLE table_attr ">"
+     space col_elements row_elements   
+     "<" "/" TABLE ">"          
+    
+col_elements → column space                           
+    | col_elements column space              
+    
+row_elements → row space
+    | row_elements row space
+    
+column → "<" COLUMN col_attr "/" ">"
+    
+row → "<" ROW row_attr ">"
+     cell_elements
+     "<" "/" ROW ">" 
+    
+cell_elements → space            
+    | cell_elements cell space  
+    
+cell → "<" CELL cell_attr ">"
+     data_elements
+     "<" "/" CELL ">"              
+    
+data_elements → space                            
+    |   data_elements data space                
+    
+data → "<" DATA data_attr ">"
+     string
+     "<" "/" DATA ">"              
+    
+data_attr → whitespace-attr TYPE value_type
+    
+cell_attr → space
+    | merge_across                              
+    | style_id                                  
+    | merge_down                                
+    | merge_across style_id                     
+    | merge_across merge_down                   
+    | style_id merge_across                     
+    | style_id merge_down                       
+    | merge_down merge_across                   
+    | merge_down style_id                       
+    | merge_down style_id merge_across          
+    | merge_down merge_across style_id          
+    | style_id merge_down merge_across          
+    | style_id merge_across merge_down          
+    | merge_across style_id merge_down          
+    | merge_across merge_down style_id          
+    
+merge_across → whitespace-attr MERGEACROSS value_integer              
+    
+merge_down → whitespace-attr MERGEDOWN value_integer                  
+    
+table_attr → space                               
+    | exp_col_cnt                               
+    | style_id                                  
+    | exp_row_cnt                               
+    | exp_col_cnt style_id                      
+    | exp_col_cnt exp_row_cnt                   
+    | style_id exp_col_cnt                      
+    | style_id exp_row_cnt                      
+    | exp_row_cnt exp_col_cnt                   
+    | exp_row_cnt style_id                      
+    | exp_row_cnt style_id exp_col_cnt          
+    | exp_row_cnt exp_col_cnt style_id          
+    | style_id exp_row_cnt exp_col_cnt          
+    | style_id exp_col_cnt exp_row_cnt          
+    | exp_col_cnt style_id exp_row_cnt          
+    | exp_col_cnt exp_row_cnt style_id          
+    
+exp_col_cnt → whitespace-attr EXP_COL_CNT value_integer      
+    
+exp_row_cnt → whitespace-attr EXP_ROW_CNT value_integer      
+    
+col_attr → space                      
+    | hidden                         
+    | style_id                       
+    | width                          
+    | hidden style_id                
+    | hidden width                   
+    | style_id hidden                
+    | style_id width                 
+    | width hidden                   
+    | width style_id                 
+    | width style_id hidden          
+    | width hidden style_id          
+    | style_id width hidden          
+    | style_id hidden width          
+    | hidden style_id width          
+    | hidden width style_id          
+    
+hidden → whitespace-attr HIDDEN value_boolean 
+    
+width → whitespace-attr WIDTH value_integer 
+    
+row_attr → space                       
+    | hidden                          
+    | style_id                        
+    | height                          
+    | hidden style_id                 
+    | hidden height                   
+    | style_id hidden                 
+    | style_id height                 
+    | height hidden                   
+    | height style_id                 
+    | height style_id hidden          
+    | height hidden style_id          
+    | style_id height hidden          
+    | style_id hidden height          
+    | hidden style_id height          
+    | hidden height style_id          
+    
+height → whitespace-attr HEIGHT value_integer 
+    
+style_id → whitespace-attr STYLE_ID value_string          
+    
+value_boolean → "=" "\"" boolean "\""
+    
+value_string → "=" "\"" string "\""
+    
+value_type → "=" "\"" type "\""
+    
+value_integer → "=" "\"" number "\""         
+    
+protected_elements → whitespace-attr PROTECTED value_boolean       
+    
+worksheet_elements → worksheet space  
+    | worksheet_elements worksheet space 
+    
+boolean → TRUE                   
+    | FALSE                     
+    
+word → LETTER                    
+    | word LETTER               
+    
+number → DIGIT                   
+    | number DIGIT              
+    
+string → ε                        
+    | string word               
+    | string number             
+    | string WHITESPACE         
+    | string punctuation        
+        
+datetime → DIGIT DIGIT "/" DIGIT DIGIT "/" DIGIT DIGIT "-" DIGIT DIGIT ":" DIGIT DIGIT ":" DIGIT DIGIT  
+    
+type → NUM_TYPE          
+    | DATETIME_TYPE     
+    | BOOLEAN_TYPE      
+    | STRING_TYPE       
+    
+punctuation → PUNCTUATION    
+    | "-" 
+    | "+" 
+    | ":" 
+    | "/" 
+    
+space → ε                 
+    | WHITESPACE        
+    | space WHITESPACE  
+    
+whitespace-attr → WHITESPACE 
+    | whitespace-attr WHITESPACE
+    
